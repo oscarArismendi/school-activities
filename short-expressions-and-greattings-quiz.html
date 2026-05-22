@@ -270,9 +270,9 @@ const nextBtn = document.getElementById("nextBtn");
 const progressBar = document.getElementById("progressBar");
 function loadQuestion() {
 const currentQ = quizData[currentQuestionIdx];
-qNum.innerText = Pregunta ${currentQuestionIdx + 1} de ${quizData.length};
+qNum.innerText = `Pregunta ${currentQuestionIdx + 1} de ${quizData.length}`;
 qText.innerText = currentQ.question;
-progressBar.style.width = ${((currentQuestionIdx + 1) / quizData.length) * 100}%;
+progressBar.style.width = `${((currentQuestionIdx + 1) / quizData.length) * 100}%`;
 optionsList.innerHTML = "";
 feedbackBox.style.display = "none";
 nextBtn.style.display = "none";
@@ -290,12 +290,12 @@ buttons.forEach(btn => btn.classList.add("disabled"));
 if (selectedOpt.isCorrect) {
 selectedBtn.classList.add("correct");
 feedbackBox.className = "feedback-box correct-bg";
-feedbackBox.innerHTML = <strong>¡Correcto!</strong> ${selectedOpt.rationale};
+feedbackBox.innerHTML = `<strong>¡Correcto!</strong> ${selectedOpt.rationale}`;
 score++;
 } else {
 selectedBtn.classList.add("incorrect");
 feedbackBox.className = "feedback-box incorrect-bg";
-feedbackBox.innerHTML = <strong>Incorrecto.</strong> ${selectedOpt.rationale};
+feedbackBox.innerHTML = `<strong>Incorrecto.</strong> ${selectedOpt.rationale}`;
 setTimeout(() => {
 allOptions.forEach((opt, idx) => {
 if(opt.isCorrect) buttons[idx].classList.add("correct");
@@ -317,7 +317,7 @@ function showResults() {
 quizScreen.style.display = "none";
 resultsScreen.style.display = "block";
 const scoreValue = document.getElementById("scoreValue");
-scoreValue.innerText = ${score}/${quizData.length};
+scoreValue.innerText = `${score}/${quizData.length}`;
 const comment = document.getElementById("resultsComment");
 if (score === quizData.length) {
 comment.innerText = "¡Excelente! Dominas a la perfección las expresiones cotidianas en inglés. 🌟";
