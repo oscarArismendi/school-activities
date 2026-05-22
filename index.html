@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordination Fortune Wheel - School Leaders</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --accent: #ffeb3b;
+            --dark: #1b5e20;
+            --text: #374151;
+            --bg: #f0fdf4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--dark);
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* WHEEL SYSTEM */
+        .wheel-wrapper {
+            position: relative;
+            width: 450px;
+            height: 450px;
+        }
+
+        /* The Ticker / Marker */
+        .ticker {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 35px solid #d32f2f;
+            z-index: 10;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.2));
+        }
+
+        .wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 0 0 12px #ffffff;
+            transition: transform 4s cubic-bezier(0.1, 0.8, 0.1, 1);
+        }
+
+        .spin-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90px;
+            height: 90px;
+            background: #ffffff;
+            border: 5px solid var(--primary-light);
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .spin-btn:hover {
+            background: var(--accent);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .spin-btn:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        /* DISPLAY CARD */
+        .display-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            min-height: 320px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-placeholder {
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        .challenge-tag {
+            background: var(--bg);
+            color: var(--dark);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #bbf7d0;
+        }
+
+        .challenge-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .challenge-desc {
+            font-size: 1.1rem;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .icon-container {
+            font-size: 3.5rem;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+                gap: 40px;
+            }
+            .wheel-wrapper {
+                width: 350px;
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-graduation-cap"></i> School Leaders</h1>
+        <p>English Challenge Wheel • Coordination Office</p>
+    </header>
+
+    <div class="main-container">
+        <div class="wheel-wrapper">
+            <div class="ticker"></div>
+            <canvas id="wheel" class="wheel-canvas" width="500" height="500"></canvas>
+            <div id="spinBtn" class="spin-btn">SPIN</div>
+        </div>
+
+        <div class="display-card" id="displayCard">
+            <div id="placeholder" class="card-placeholder">
+                <i class="fa-solid fa-circle-play" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px; display: block;"></i>
+                Tap SPIN to unlock an English interaction challenge!
+            </div>
+            
+            <div id="iconContainer" class="icon-container"></div>
+            <span id="challengeTag" class="challenge-tag">Greeting</span>
+            <h2 id="challengeTitle" class="challenge-title"></h2>
+            <p id="challengeDesc" class="challenge-desc"></p>
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTickSound() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        function playWinSound() {
+            const now = audioCtx.currentTime;
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc1.frequency.setValueAtTime(523.25, now); // C5
+            osc1.frequency.setValueAtTime(659.25, now + 0.1); // E5
+            osc1.frequency.setValueAtTime(783.99, now + 0.2); // G5
+            osc1.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+            
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            
+            osc1.start(now);
+            osc1.stop(now + 0.5);
+        }
+    </script>
+
+    <script>
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinBtn');
+        
+        // Data items according to your prompt instructions & examples
+        const items = [
+            { 
+                label: 'Morning', 
+                tag: 'Greeting', 
+                title: 'Good Morning!', 
+                desc: 'Greet the coordinator with a big smile and say: "Good morning! How are you today?"',
+                color: '#e8f5e9', textColor: '#1b5e20', icon: 'fa-sun'
+            },
+            { 
+                label: 'Be on time', 
+                tag: 'Instruction', 
+                title: 'Please be on time!', 
+                desc: 'Punctuality is a key leader habit. Repeat this rule: "The assembly starts at 10:00 AM."',
+                color: '#c8e6c9', textColor: '#1b5e20', icon: 'fa-clock'
+            },
+            { 
+                label: 'Welcome', 
+                tag: 'Greeting', 
+                title: 'Welcome to the Office', 
+                desc: 'Say hi! Tell the coordinator: "Hello! Nice to see you today!"',
+                color: '#a5d6a7', textColor: '#1b5e20', icon: 'fa-hand-wave'
+            },
+            { 
+                label: 'Listen', 
+                tag: 'Instruction', 
+                title: 'Listen Carefully', 
+                desc: 'A leader always pays attention. Practice this phrase: "Please listen carefully to the announcements."',
+                color: '#81c784', textColor: '#1b5e20', icon: 'fa-ear-listen'
+            },
+            { 
+                label: 'Check Email', 
+                tag: 'Announcement', 
+                title: 'Check your Email!', 
+                desc: 'Stay informed. Read aloud: "We have an important announcement. Please check your email."',
+                color: '#66bb6a', textColor: '#ffffff', icon: 'fa-envelope'
+            },
+            { 
+                label: 'Together', 
+                tag: 'Instruction', 
+                title: 'Work Together', 
+                desc: 'Collaboration is key! High five a classmate or the coordinator and say: "Let\'s work together!"',
+                color: '#4caf50', textColor: '#ffffff', icon: 'fa-users'
+            },
+            { 
+                label: 'Nice Day', 
+                tag: 'Greeting', 
+                title: 'Have a nice day!', 
+                desc: 'Spread kindness! Say to the room: "Have a wonderful and productive day!"',
+                color: '#43a047', textColor: '#ffffff', icon: 'fa-face-smile'
+            },
+            { 
+                label: 'Reminders', 
+                tag: 'Announcement', 
+                title: 'School Reminders', 
+                desc: 'Help your group! Practice saying: "Please remember to bring your notebooks tomorrow."',
+                color: '#388e3c', textColor: '#ffffff', icon: 'fa-list-check'
+            }
+        ];
+
+        const numItems = items.length;
+        const arc = 2 * Math.PI / numItems;
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        // Draw Wheel Function
+        function drawWheel() {
+            const radius = canvas.width / 2;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < numItems; i++) {
+                const angle = i * arc;
+                
+                // Draw slice
+                ctx.beginPath();
+                ctx.fillStyle = items[i].color;
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius - 10, angle, angle + arc);
+                ctx.lineTo(radius, radius);
+                ctx.fill();
+                
+                // Draw Text
+                ctx.save();
+                ctx.fillStyle = items[i].textColor;
+                ctx.translate(radius, radius);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.font = "bold 18px Poppins";
+                ctx.fillText(items[i].label, radius - 35, 8);
+                ctx.restore();
+            }
+
+            // Outer decorative ring
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius - 5, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#2e7d32';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+        }
+
+        // Initialize Wheel
+        drawWheel();
+
+        // Spin Event
+        spinBtn.addEventListener('click', () => {
+            if (isSpinning) return;
+            
+            // Resume Audio Context if suspended (browser security)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            isSpinning = true;
+            
+            // Generate a random high rotation angle
+            const extraDegrees = Math.floor(Math.random() * 360) + 1440; // At least 4 full spins
+            currentRotation += extraDegrees;
+            
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+            
+            // Simulate sound ticks during animation
+            let ticks = 0;
+            const maxTicks = 25;
+            const tickInterval = setInterval(() => {
+                if (ticks < maxTicks) {
+                    playTickSound();
+                    ticks++;
+                } else {
+                    clearInterval(tickInterval);
+                }
+            }, 130);
+
+            // Calculate winning segment when transition stops (4 seconds matches CSS)
+            setTimeout(() => {
+                isSpinning = false;
+                playWinSound();
+                
+                // Normalize rotation to 0-360 deg range
+                const actualDegrees = currentRotation % 360;
+                
+                // Canvas rotates clockwise, pointer is at the TOP (270 degrees relative to 0 start position)
+                // We calculate which slice landed under the top pointer
+                const correctedDegrees = (360 - actualDegrees + 270) % 360;
+                const winningIndex = Math.floor((correctedDegrees / 360) * numItems) % numItems;
+                
+                displayResult(items[winningIndex]);
+            }, 4000);
+        });
+
+        // Show Result Card Logic
+        function displayResult(item) {
+            document.getElementById('placeholder').style.display = 'none';
+            
+            const tag = document.getElementById('challengeTag');
+            const title = document.getElementById('challengeTitle');
+            const desc = document.getElementById('challengeDesc');
+            const iconContainer = document.getElementById('iconContainer');
+            
+            tag.style.display = 'inline-block';
+            tag.innerText = item.tag;
+            title.innerText = item.title;
+            desc.innerText = item.desc;
+            
+            iconContainer.style.display = 'block';
+            iconContainer.innerHTML = `<i class="fa-solid ${item.icon}"></i>`;
+            
+            // Little bounce animation to make it dynamic
+            const card = document.getElementById('displayCard');
+            card.style.transform = 'scale(1.03)';
+            setTimeout(() => card.style.transform = 'scale(1)', 200);
+        }
+    </script>
+</body>
+</html>
