@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📝 Short Expressions & Greetings Quiz</title>
+<style>
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 20px;
+}
+.quiz-container {
+background-color: white;
+border-radius: 16px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+padding: 30px;
+width: 100%;
+max-width: 550px;
+}
+h1 {
+color: #2c3e50;
+font-size: 22px;
+text-align: center;
+margin-bottom: 5px;
+}
+.subtitle {
+color: #7f8c8d;
+font-size: 14px;
+text-align: center;
+margin-bottom: 25px;
+}
+.progress-bar {
+height: 6px;
+background-color: #ecf0f1;
+border-radius: 3px;
+margin-bottom: 25px;
+overflow: hidden;
+}
+.progress {
+height: 100%;
+background-color: #3498db;
+width: 20%;
+transition: width 0.3s ease;
+}
+.question-box {
+margin-bottom: 20px;
+}
+.question-number {
+font-size: 13px;
+font-weight: bold;
+color: #3498db;
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-bottom: 5px;
+}
+.question-text {
+font-size: 17px;
+color: #2c3e50;
+font-weight: 600;
+line-height: 1.4;
+}
+.options-list {
+display: flex;
+flex-direction: column;
+gap: 12px;
+margin-top: 20px;
+}
+.option-item {
+background-color: #f8f9fa;
+border: 2px solid #e2e8f0;
+padding: 14px 18px;
+border-radius: 10px;
+cursor: pointer;
+text-align: left;
+font-size: 15px;
+font-weight: 500;
+color: #4a5568;
+transition: all 0.2s ease;
+}
+.option-item:hover:not(.disabled) {
+border-color: #3498db;
+background-color: #edf2f7;
+transform: translateY(-1px);
+}
+.option-item.correct {
+background-color: #2ecc71 !important;
+border-color: #27ae60 !important;
+color: white;
+}
+.option-item.incorrect {
+background-color: #e74c3c !important;
+border-color: #c0392b !important;
+color: white;
+}
+.option-item.disabled {
+cursor: not-allowed;
+opacity: 0.8;
+}
+.feedback-box {
+margin-top: 20px;
+padding: 15px;
+border-radius: 8px;
+font-size: 14px;
+line-height: 1.5;
+display: none;
+}
+.feedback-box.correct-bg {
+background-color: #e8f5e9;
+color: #2e7d32;
+border-left: 4px solid #2ecc71;
+}
+.feedback-box.incorrect-bg {
+background-color: #ffebee;
+color: #c62828;
+border-left: 4px solid #e74c3c;
+}
+.nav-actions {
+margin-top: 25px;
+display: flex;
+justify-content: flex-end;
+}
+.next-btn {
+background-color: #2c3e50;
+color: white;
+border: none;
+padding: 10px 24px;
+font-size: 15px;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+display: none;
+transition: background-color 0.2s;
+}
+.next-btn:hover {
+background-color: #1a252f;
+}
+/* Pantalla de Resultados Finales */
+.results-screen {
+text-align: center;
+display: none;
+}
+.score-circle {
+width: 100px;
+height: 100px;
+background-color: #3498db;
+color: white;
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 28px;
+font-weight: bold;
+margin: 20px auto;
+box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+.restart-btn {
+background-color: #3498db;
+color: white;
+border: none;
+padding: 12px 30px;
+font-size: 16px;
+font-weight: bold;
+border-radius: 8px;
+cursor: pointer;
+margin-top: 20px;
+transition: background-color 0.2s;
+}
+.restart-btn:hover {
+background-color: #2980b9;
+}
+</style>
+</head>
+<body>
+<div class="quiz-container">
+<!-- Pantalla de Juego -->
+<div id="quizScreen">
+<h1>Short Expressions & Greetings Quiz</h1>
+<p class="subtitle">Práctica Rápida de Expresiones Cortas</p>
+<div class="progress-bar">
+<div class="progress" id="progressBar"></div>
+</div>
+<div class="question-box">
+<div class="question-number" id="qNum">Pregunta 1 de 5</div>
+<div class="question-text" id="qText">Cargando pregunta...</div>
+</div>
+<div class="options-list" id="optionsList">
+<!-- Las opciones se inyectan con JS -->
+</div>
+<div class="feedback-box" id="feedbackBox"></div>
+<div class="nav-actions">
+<button class="next-btn" id="nextBtn" onclick="nextQuestion()">Siguiente Pregunta →</button>
+</div>
+</div>
+<!-- Pantalla Final -->
+<div class="results-screen" id="resultsScreen">
+<h1>¡Desafío Completado!</h1>
+<p class="subtitle">Has terminado la trivia de expresiones cotidianas</p>
+<div class="score-circle" id="scoreValue">5/5</div>
+<p id="resultsComment" style="color: #555; font-size: 16px; margin-bottom: 10px;"></p>
+<button class="restart-btn" onclick="restartQuiz()">Volver a intentar</button>
+</div>
+</div>
+<script>
+const quizData = [
+{
+question: "Alguien te dice: 'How are you?'. ¿Cuál es una respuesta corta y natural si te encuentras bien?",
+options: [
+{ text: "I'm good, thanks!", isCorrect: true, rationale: "Es una de las formas más comunes, cortas y amigables de responder en el día a día." },
+{ text: "Goodbye.", isCorrect: false, rationale: "Esta es una expresión de despedida, por lo que no responde a la pregunta sobre cómo estás." },
+{ text: "You are welcome.", isCorrect: false, rationale: "Esta frase significa 'de nada' y se usa para responder a un agradecimiento." },
+{ text: "Nice to meet you.", isCorrect: false, rationale: "Se utiliza únicamente cuando conoces a alguien por primera vez." }
+]
+},
+{
+question: "Le haces un favor a un compañero y te dice: 'Thank you so much!'. ¿Qué le respondes de forma corta?",
+options: [
+{ text: "Not bad.", isCorrect: false, rationale: "Significa 'nada mal' y se usa para responder a un saludo, no a un agradecimiento." },
+{ text: "No problem!", isCorrect: true, rationale: "Es una manera muy común, corta y casual de decir 'de nada' o 'no hay problema' en inglés." },
+{ text: "See you later.", isCorrect: false, rationale: "Significa 'nos vemos luego', por lo que se usa para despedirse." },
+{ text: "Hello.", isCorrect: false, rationale: "Es un saludo inicial y no tiene sentido usarlo después de un agradecimiento." }
+]
+},
+{
+question: "Quieres saludar a un amigo de manera muy informal y rápida por la tarde. ¿Qué expresión usas?",
+options: [
+{ text: "Good night.", isCorrect: false, rationale: "Se usa principalmente para despedirse cuando alguien va a dormir, no de tarde." },
+{ text: "Hey, what's up?", isCorrect: true, rationale: "Es una expresión sumamente popular, informal y perfecta para saludar rápidamente." },
+{ text: "Nice weather.", isCorrect: false, rationale: "Aunque es un comentario del clima, no funciona directamente como un saludo." },
+{ text: "Thank you.", isCorrect: false, rationale: "Se usa para agradecer, no para iniciar una conversación o saludar." }
+]
+},
+{
+question: "Te vas de un lugar y quieres despedirte de tus alumnos deseándoles un buen día de forma corta. ¿Qué les dices?",
+options: [
+{ text: "Good morning.", isCorrect: false, rationale: "Es un saludo que se da al llegar por la mañana, no una despedida." },
+{ text: "Have a good one!", isCorrect: true, rationale: "Es una expresión corta y nativa muy común para decir '¡Que tengas un buen día!' al despedirse." },
+{ text: "Excuse me.", isCorrect: false, rationale: "Se usa para pedir permiso o disculparse al interrumpir a alguien." },
+{ text: "I'm sorry.", isCorrect: false, rationale: "Es una expresión para pedir disculpas o mostrar arrepentimiento." }
+]
+},
+{
+question: "Un estudiante te pregunta si terminaron la actividad y quieres responderle con un 'Sí, por supuesto' muy natural. ¿Qué expresión usas?",
+options: [
+{ text: "Never mind.", isCorrect: false, rationale: "Significa 'olvídalo' o 'no importa', lo cual no responde afirmativamente." },
+{ text: "Yeah, sure!", isCorrect: true, rationale: "Es una respuesta corta, positiva y muy natural que denota total confirmación." },
+{ text: "Take care.", isCorrect: false, rationale: "Significa 'cuídate' y se emplea como una despedida." },
+{ text: "Maybe.", isCorrect: false, rationale: "Significa 'tal vez', lo que indica duda en lugar de una confirmación segura." }
+]
+}
+];
+let currentQuestionIdx = 0;
+let score = 0;
+const quizScreen = document.getElementById("quizScreen");
+const resultsScreen = document.getElementById("resultsScreen");
+const qNum = document.getElementById("qNum");
+const qText = document.getElementById("qText");
+const optionsList = document.getElementById("optionsList");
+const feedbackBox = document.getElementById("feedbackBox");
+const nextBtn = document.getElementById("nextBtn");
+const progressBar = document.getElementById("progressBar");
+function loadQuestion() {
+const currentQ = quizData[currentQuestionIdx];
+qNum.innerText = Pregunta ${currentQuestionIdx + 1} de ${quizData.length};
+qText.innerText = currentQ.question;
+progressBar.style.width = ${((currentQuestionIdx + 1) / quizData.length) * 100}%;
+optionsList.innerHTML = "";
+feedbackBox.style.display = "none";
+nextBtn.style.display = "none";
+currentQ.options.forEach((opt, idx) => {
+const button = document.createElement("button");
+button.className = "option-item";
+button.innerText = opt.text;
+button.onclick = () => selectOption(button, opt, currentQ.options);
+optionsList.appendChild(button);
+});
+}
+function selectOption(selectedBtn, selectedOpt, allOptions) {
+const buttons = document.querySelectorAll(".option-item");
+buttons.forEach(btn => btn.classList.add("disabled"));
+if (selectedOpt.isCorrect) {
+selectedBtn.classList.add("correct");
+feedbackBox.className = "feedback-box correct-bg";
+feedbackBox.innerHTML = <strong>¡Correcto!</strong> ${selectedOpt.rationale};
+score++;
+} else {
+selectedBtn.classList.add("incorrect");
+feedbackBox.className = "feedback-box incorrect-bg";
+feedbackBox.innerHTML = <strong>Incorrecto.</strong> ${selectedOpt.rationale};
+setTimeout(() => {
+allOptions.forEach((opt, idx) => {
+if(opt.isCorrect) buttons[idx].classList.add("correct");
+});
+}, 300);
+}
+feedbackBox.style.display = "block";
+nextBtn.style.display = "block";
+}
+function nextQuestion() {
+currentQuestionIdx++;
+if (currentQuestionIdx < quizData.length) {
+loadQuestion();
+} else {
+showResults();
+}
+}
+function showResults() {
+quizScreen.style.display = "none";
+resultsScreen.style.display = "block";
+const scoreValue = document.getElementById("scoreValue");
+scoreValue.innerText = ${score}/${quizData.length};
+const comment = document.getElementById("resultsComment");
+if (score === quizData.length) {
+comment.innerText = "¡Excelente! Dominas a la perfección las expresiones cotidianas en inglés. 🌟";
+} else if (score >= 3) {
+comment.innerText = "¡Buen trabajo! Tienes una buena base, sigue practicando. 👍";
+} else {
+comment.innerText = "¡Buen intento! Repasa las expresiones para mejorar tus reflejos en inglés. 📚";
+}
+}
+function restartQuiz() {
+currentQuestionIdx = 0;
+score = 0;
+resultsScreen.style.display = "none";
+quizScreen.style.display = "block";
+loadQuestion();
+}
+loadQuestion();
+</script>
+</body>
+</html>
